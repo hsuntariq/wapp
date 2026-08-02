@@ -6,10 +6,13 @@ import { userRouter } from "./apis/userApis.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { connectDB } from "./config/connect.js";
 import dns from "dns";
+import cors from "cors";
 
 dns.setServers(["8.8.8.8"]);
 
 const app = express();
+
+app.use(cors());
 
 // convert/parse to json
 

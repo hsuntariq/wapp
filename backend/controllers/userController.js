@@ -8,6 +8,17 @@ export const registerUser = async (req, res) => {
     throw new Error("Please enter all the fields");
   }
 
+  // chech if email or username exists
+
+  let findUser = await User.findOne({
+    $or: [{ email }, { username }],
+  });
+
+  if (findUser) {
+    res.status(400);
+    throw new Error("Email or password already exists");
+  }
+
   let createdUser = await User.create({
     name,
     email,
@@ -19,6 +30,22 @@ export const registerUser = async (req, res) => {
   res.send(createdUser);
 };
 
-export const loginUser = (req, res) => {
-  res.send("user logged in");
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  let findUser = await User.findOne({ email });
+
+  if (!findUser) {
+    res.status(404);
+    throw new Error("Invalid Email");
+  }
+
+  // check if password exists
+
+  if (password == findUser.password) {
+    res.send(findUser);
+  } else {
+    res.status(401);
+    throw new Error("Invalid Credentials");
+  }
 };
