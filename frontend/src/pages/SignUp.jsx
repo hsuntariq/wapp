@@ -231,7 +231,7 @@ const SignUp = () => {
                 </div>
                 <button
                   onClick={handleSignUp}
-                  type="submit"
+                  type="button"
                   className="w-full sm:w-auto px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                   Login →
