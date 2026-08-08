@@ -1,7 +1,7 @@
 // ============================================
 // FILE: MessagePanel.jsx
 // ============================================
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   IoVideocamOutline,
   IoCallOutline,
@@ -13,10 +13,11 @@ import {
   IoCheckmarkDoneCircleOutline,
   IoDocumentTextOutline,
 } from "react-icons/io5";
+import { AppContext, useGlobal } from "../context/AppProvider";
 
 const MessagePanel = () => {
   const [message, setMessage] = useState("");
-
+  const { selected, generateColor } = useGlobal();
   const messages = [
     {
       id: 1,
@@ -57,13 +58,27 @@ const MessagePanel = () => {
       {/* Chat Header */}
       <div className="h-16 w-full bg-[#d3e5f1] border-b border-[#bdc9c5] flex justify-between items-center px-4 shrink-0 sticky top-0 z-10">
         <div className="flex items-center space-x-3 cursor-pointer">
-          <img
-            className="w-10 h-10 rounded-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmpMJ5SRN2IXO6yP5ueI8cimzPAo6RtoXscTKHN05WIHH_NQdxoLhS6eoo1rwx8wkpxrHyGEIMLeHn1Q1RTXev5ytHljoAmvmkrJKrSOvydQJclHDMfw_gvXtsfJyrY8jwwMdpDkePnpiLg3nmP2lFYfWAQqvQU1bFFosIyWTARSw48kNc8Ujq0A1ggub13OrwnEWK2ZeP8zA4NiC__89sx83NHIHBweNWsVdutRkyPNm769PvuMxRKA"
-            alt="John Doe"
-          />
+          {selected?.avatar ? (
+            <img
+              className="w-10 h-10 rounded-full object-cover"
+              src={selected?.avatar}
+              alt="John Doe"
+            />
+          ) : (
+            <div
+              style={{
+                background: generateColor(),
+              }}
+              className="w-10 h-10 flex justify-center items-center bg-red-500 rounded-full object-cover"
+            >
+              {selected?.name[0]}
+            </div>
+          )}
+
           <div>
-            <h2 className="text-base font-semibold text-[#0c1e26]">John Doe</h2>
+            <h2 className="text-base font-semibold text-[#0c1e26]">
+              {selected?.name}
+            </h2>
             <p className="text-xs font-medium text-[#3d4946]">Online</p>
           </div>
         </div>

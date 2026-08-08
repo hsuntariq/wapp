@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const SignUp = () => {
   const [formFields, setFormFields] = useState({
     name: "",
@@ -51,6 +52,8 @@ const SignUp = () => {
     });
   };
 
+  let navigate = useNavigate();
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
@@ -61,6 +64,10 @@ const SignUp = () => {
       phone,
       username,
     });
+
+    // store the data in the frontend
+    localStorage.setItem("user", JSON.stringify(response.data));
+    navigate("/home");
 
     console.log(response);
   };

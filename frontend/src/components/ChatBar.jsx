@@ -1,7 +1,7 @@
 // ============================================
 // FILE: ChatBar.jsx
 // ============================================
-import React,{useState} from "react";
+import React, { useContext, useState } from "react";
 import {
   IoAddCircleOutline,
   IoFilterOutline,
@@ -10,10 +10,24 @@ import {
   IoPeopleOutline,
   IoChatbubbleOutline,
 } from "react-icons/io5";
+import { AppContext, useGlobal } from "../context/AppProvider";
+import { useEffect } from "react";
 
 const ChatBar = () => {
-    const [selected,setSelected] = useState(null)
+  const { selected, setSelected, allUsers, user, generateColor } = useGlobal();
+  const [searchedUser, setSearchedUsers] = useState([]);
+  const [search, setSearch] = useState("");
 
+  const getMyUsers = () => {
+    let newUsers = allUsers.filter((item, index) => {
+      return item.name.toLowerCase().startsWith(search.toLowerCase());
+    });
+    setSearchedUsers(newUsers);
+  };
+
+  useEffect(() => {
+    getMyUsers();
+  }, [search]);
 
   const conversations = [
     {
@@ -77,20 +91,57 @@ const ChatBar = () => {
       {/* Search */}
       <div className="p-4 shrink-0">
         <div className="relative w-full">
-          <IoSearchOutline className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#3d4946] text-xl" />
+          <IoSearchOutline className="absolute  left-3 top-1/2 transform -translate-y-1/2 text-[#3d4946] text-xl" />
           <input
-            className="w-full h-10 pl-10 pr-4 bg-[#e8f6ff] text-[#0c1e26] rounded-full border-none focus:ring-1 focus:ring-[#00685d] text-sm placeholder:text-[#3d4946]/60"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-10 pl-10 pr-4 outline-0 focus:border-green-500 bg-[#e8f6ff] text-[#0c1e26] rounded-full border-none focus:ring-1 focus:ring-[#00685d] text-sm placeholder:text-[#3d4946]/60"
             placeholder="Search or start a new chat"
             type="text"
           />
         </div>
       </div>
 
+      {/* search list */}
+
+      {search?.length > 0 && (
+        <ul className="p-3 unstyled flex flex-col gap-2 rounded-md shadow-xl bggray-200 shadow-zinc-600 w-[90%] mx-auto my-3">
+          {searchedUser?.map((item, index) => {
+            return (
+              <div className="flex items-center gap-3">
+                {user?.avatar ? (
+                  <img
+                    className="w-10 h-10 rounded-full object-cover"
+                    src={user?.avatar}
+                    alt="John Doe"
+                  />
+                ) : (
+                  <div
+                    style={{
+                      background: generateColor(),
+                    }}
+                    className="w-10 h-10 flex justify-center items-center bg-red-500 rounded-full object-cover"
+                  >
+                    {item?.name[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="">
+                  <h4 className="text-sm font-bold ">{item.name}</h4>
+                  <h4 className="text-sm text-gray-500 font-semibold">
+                    @{item.username}
+                  </h4>
+                </div>
+              </div>
+            );
+          })}
+        </ul>
+      )}
+
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {conversations.map((conv) => (
           <div
-            onClick={()=>setSelected(conv)}
+            onClick={() => setSelected(conv)}
             key={conv.id}
             className={`h-[72px] px-4 flex items-center space-x-3 cursor-pointer hover:bg-[#f4faff] transition-colors ${
               conv.isActive

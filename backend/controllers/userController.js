@@ -49,3 +49,8 @@ export const loginUser = async (req, res) => {
     throw new Error("Invalid Credentials");
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  let allUsers = await User.find();
+  res.send(allUsers);
+};
