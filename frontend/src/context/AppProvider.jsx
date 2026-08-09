@@ -6,7 +6,7 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [selected, setSelected] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
-
+  const [conversations, setConversations] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
   const colors = ["A", "B", "C", "D", "E", "F", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -25,13 +25,24 @@ export const AppProvider = ({ children }) => {
     return hex;
   };
 
+  // get chats
+  const getMyChats = async () => {
+    const response = await axios.get(
+      `http://localhost:5174/get-chats/${user?._id}`,
+    );
+    setConversations(response?.data);
+  };
+
+  // get users
+
   const getUsers = async () => {
-    let response = await axios.get("http://localhost:5174/get-all-users");
-    setAllUsers(response.data);
+    let response = await axios.get(`http://localhost:5174/get-all-users`);
+    setAllUsers(response?.data);
   };
 
   useEffect(() => {
     getUsers();
+    getMyChats();
   }, []);
 
   return (
@@ -43,6 +54,8 @@ export const AppProvider = ({ children }) => {
         user,
         allUsers,
         setAllUsers,
+        conversations,
+        setConversations,
       }}
     >
       {children}

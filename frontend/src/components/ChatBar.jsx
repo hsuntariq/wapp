@@ -12,9 +12,17 @@ import {
 } from "react-icons/io5";
 import { AppContext, useGlobal } from "../context/AppProvider";
 import { useEffect } from "react";
-
+import moment from "moment";
 const ChatBar = () => {
-  const { selected, setSelected, allUsers, user, generateColor } = useGlobal();
+  const {
+    selected,
+    setSelected,
+    allUsers,
+    user,
+    generateColor,
+    conversations,
+    setConversations,
+  } = useGlobal();
   const [searchedUser, setSearchedUsers] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -29,49 +37,7 @@ const ChatBar = () => {
     getMyUsers();
   }, [search]);
 
-  const conversations = [
-    {
-      id: 1,
-      name: "John Doe",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCmmW4Iwp5-HA7nxpog9diHhTVIxs2omuWj7iMmaPXjjgDfzmUFkQXfISBTLxcUKygmALj_4RoRRtxuQhJnW2pT-aPZ87w3Uj-VnhPcIJRNPSVXh-1GHFgGJIUgUsKscox7x2ztX4ksVYS-GtCtD4-aZ9ZyjKe8VWyy9GaXV1JcpZgGauY6-_X7QXFZSyPFsEt2AjxI1Q5zNoFphLZFdJehIyj8XRzivqwODdyTMFC15gDKS6GQyFXLnw",
-      lastMessage:
-        "The latest quarterly report looks solid. Let's review it...",
-      timestamp: "10:42 AM",
-      unread: 0,
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuCgw7vf4nT8ap6NThYB_btvQwSJBaeK910BHQQDCTyAdd1Fz5M9a7Fv3E7Km4BPIzjS5EMCVlN3PDDbisF-i8oak8Kt4m1VyjhCg61DyCx-X-YZde3mrFOlgk8qj3z98Mog4dKi351fnB9M555GN5fMp6ySNoQhWCzuVXcIQYVxTnjICRajeETxaBLtVssO95EMTZ7Cp7OER2h0aT6ASa9krscttbr1YSHE0r7o2sZYsa_kg_02tgSohA",
-      lastMessage: "Can you send over those wireframes?",
-      timestamp: "Yesterday",
-      unread: 2,
-      isActive: false,
-    },
-    {
-      id: 3,
-      name: "Team Alpha",
-      avatar: null,
-      lastMessage: "Mike: We should align on the Q3 roadmap next week.",
-      timestamp: "Monday",
-      unread: 0,
-      isActive: false,
-      isGroup: true,
-    },
-    {
-      id: 4,
-      name: "Announcements",
-      avatar: null,
-      lastMessage: "Server maintenance scheduled for this weekend.",
-      timestamp: "Aug 12",
-      unread: 0,
-      isActive: false,
-      isGroup: true,
-    },
-  ];
+  // get my chats
 
   return (
     <div className="w-[350px] h-full bg-white border-r border-[#bdc9c5] flex flex-col z-10 shrink-0">
@@ -106,34 +72,46 @@ const ChatBar = () => {
 
       {search?.length > 0 && (
         <ul className="p-3 unstyled flex flex-col gap-2 rounded-md shadow-xl bggray-200 shadow-zinc-600 w-[90%] mx-auto my-3">
-          {searchedUser?.map((item, index) => {
-            return (
-              <div className="flex items-center gap-3">
-                {user?.avatar ? (
-                  <img
-                    className="w-10 h-10 rounded-full object-cover"
-                    src={user?.avatar}
-                    alt="John Doe"
-                  />
-                ) : (
-                  <div
-                    style={{
-                      background: generateColor(),
-                    }}
-                    className="w-10 h-10 flex justify-center items-center bg-red-500 rounded-full object-cover"
-                  >
-                    {item?.name[0].toUpperCase()}
+          {searchedUser?.length > 0 ? (
+            searchedUser?.map((item, index) => {
+              return (
+                <div
+                  onClick={() => {
+                    setSelected(item);
+                    setSearch("");
+                  }}
+                  className="flex cursor-pointer hover:bg-gray-300 p-2 border  border-gray-300 border-t-0 border-e-0 border-s-0 rounded-md items-center gap-3"
+                >
+                  {user?.avatar ? (
+                    <img
+                      className="w-10 h-10 rounded-full object-cover"
+                      src={user?.avatar}
+                      alt="John Doe"
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        background: generateColor(),
+                      }}
+                      className="w-10 h-10 flex justify-center items-center bg-red-500 rounded-full object-cover"
+                    >
+                      {item?.name[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="">
+                    <h4 className="text-sm font-bold ">{item.name}</h4>
+                    <h4 className="text-sm text-gray-500 font-semibold">
+                      @{item.username}
+                    </h4>
                   </div>
-                )}
-                <div className="">
-                  <h4 className="text-sm font-bold ">{item.name}</h4>
-                  <h4 className="text-sm text-gray-500 font-semibold">
-                    @{item.username}
-                  </h4>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <h4 className="font-semibold text-center text-gray-500 text-sm">
+              No Record found
+            </h4>
+          )}
         </ul>
       )}
 
@@ -158,7 +136,7 @@ const ChatBar = () => {
               <img
                 className="w-12 h-12 rounded-full object-cover shrink-0"
                 src={conv.avatar}
-                alt={conv.name}
+                alt={conv.receiver_id.name}
               />
             ) : conv.isGroup ? (
               <div className="w-12 h-12 rounded-full bg-[#a5ede0] flex items-center justify-center shrink-0 text-[#226e63]">
@@ -172,11 +150,13 @@ const ChatBar = () => {
 
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex justify-between items-baseline mb-1">
-                <h3 className="text-base font-semibold text-[#0c1e26] truncate">
-                  {conv.name}
+                <h3 className="text-sm font-semibold text-[#0c1e26] truncate">
+                  {conv.receiver_id.name}
                 </h3>
                 <span className="text-xs font-medium text-[#3d4946]">
-                  {conv.timestamp}
+                  {moment(
+                    conv.messages[conv?.messages?.length - 1]?.time,
+                  ).fromNow()}
                 </span>
               </div>
               <div className="flex items-center text-sm text-[#3d4946] truncate">
@@ -186,7 +166,7 @@ const ChatBar = () => {
                 <span
                   className={`truncate ${conv.unread > 0 ? "font-medium text-[#0c1e26]" : ""}`}
                 >
-                  {conv.lastMessage}
+                  {conv.messages[conv?.messages?.length - 1]?.message}
                 </span>
                 {conv.unread > 0 && (
                   <span className="bg-[#00685d] text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center shrink-0 ml-2">

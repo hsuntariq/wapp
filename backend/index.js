@@ -7,6 +7,7 @@ import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { connectDB } from "./config/connect.js";
 import dns from "dns";
 import cors from "cors";
+import { chatRouter } from "./apis/chatApi.js";
 
 dns.setServers(["8.8.8.8"]);
 
@@ -26,6 +27,7 @@ connectDB();
 //apis => users,chats ...
 
 app.use("/", userRouter);
+app.use("/", chatRouter);
 
 app.use(errorHandler);
 
