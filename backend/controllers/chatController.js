@@ -34,7 +34,7 @@ export const getMyChats = async (req, res) => {
 
   let myChats = await Chat.find({
     $or: [{ sender_id: user_id }, { receiver_id: user_id }],
-  }).populate("receiver_id");
+  }).populate("receiver_id", "username name email");
 
   res.send(myChats);
 };

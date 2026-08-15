@@ -22,6 +22,8 @@ const ChatBar = () => {
     generateColor,
     conversations,
     setConversations,
+    selectedConv,
+    setSelectedConv,
   } = useGlobal();
   const [searchedUser, setSearchedUsers] = useState([]);
   const [search, setSearch] = useState("");
@@ -78,6 +80,7 @@ const ChatBar = () => {
                 <div
                   onClick={() => {
                     setSelected(item);
+
                     setSearch("");
                   }}
                   className="flex cursor-pointer hover:bg-gray-300 p-2 border  border-gray-300 border-t-0 border-e-0 border-s-0 rounded-md items-center gap-3"
@@ -119,7 +122,10 @@ const ChatBar = () => {
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {conversations.map((conv) => (
           <div
-            onClick={() => setSelected(conv)}
+            onClick={() => {
+              setSelected(conv?.receiver_id);
+              setSelectedConv(conv?.messages);
+            }}
             key={conv.id}
             className={`h-[72px] px-4 flex items-center space-x-3 cursor-pointer hover:bg-[#f4faff] transition-colors ${
               conv.isActive
@@ -136,7 +142,7 @@ const ChatBar = () => {
               <img
                 className="w-12 h-12 rounded-full object-cover shrink-0"
                 src={conv.avatar}
-                alt={conv.receiver_id.name}
+                alt={conv?.receiver_id?.name || ""}
               />
             ) : conv.isGroup ? (
               <div className="w-12 h-12 rounded-full bg-[#a5ede0] flex items-center justify-center shrink-0 text-[#226e63]">
@@ -151,7 +157,7 @@ const ChatBar = () => {
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex justify-between items-baseline mb-1">
                 <h3 className="text-sm font-semibold text-[#0c1e26] truncate">
-                  {conv.receiver_id.name}
+                  {conv?.receiver_id?.name || ""}
                 </h3>
                 <span className="text-xs font-medium text-[#3d4946]">
                   {moment(

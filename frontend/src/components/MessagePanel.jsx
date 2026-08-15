@@ -14,40 +14,21 @@ import {
   IoDocumentTextOutline,
 } from "react-icons/io5";
 import { AppContext, useGlobal } from "../context/AppProvider";
+import axios from "axios";
 
 const MessagePanel = () => {
   const [message, setMessage] = useState("");
   const { selected, generateColor } = useGlobal();
-  const messages = [
-    {
-      id: 1,
-      text: "Hey, I had a chance to review the Q3 design proposals. They look really strong overall.",
-      time: "10:35 AM",
-      isOutgoing: false,
-    },
-    {
-      id: 2,
-      text: "Are we still meeting at 2 PM to go over the final feedback?",
-      time: "10:36 AM",
-      isOutgoing: false,
-    },
-    {
-      id: 3,
-      text: "Yes, definitely. I've compiled the notes from the engineering team as well.",
-      time: "10:40 AM",
-      isOutgoing: true,
-    },
-    {
-      id: 4,
-      text: "The latest quarterly report looks solid. Let's review it during the call.",
-      time: "10:42 AM",
-      isOutgoing: true,
-      hasAttachment: true,
-    },
-  ];
-
-  const handleSend = () => {
+  const { user, getMyChats, selectedConv } = useGlobal();
+  const handleSend = async () => {
     if (message.trim()) {
+      const response = await axios.post(
+        `http://localhost:5174/add-message/${user?._id}/${selected?._id}`,
+        {
+          message,
+        },
+      );
+      getMyChats();
       // Handle send message
       setMessage("");
     }
@@ -71,13 +52,13 @@ const MessagePanel = () => {
               }}
               className="w-10 h-10 flex justify-center items-center bg-red-500 rounded-full object-cover"
             >
-              {selected?.name[0]}
+              {selected?.receiver_id?.name[0] || selected?.name[0]}
             </div>
           )}
 
           <div>
             <h2 className="text-base font-semibold text-[#0c1e26]">
-              {selected?.name}
+              {selected?.receiver_id?.name || selected?.name}
             </h2>
             <p className="text-xs font-medium text-[#3d4946]">Online</p>
           </div>
@@ -106,43 +87,11 @@ const MessagePanel = () => {
           </span>
         </div>
 
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.isOutgoing ? "self-end" : "self-start"} max-w-[75%]`}
-          >
-            <div
-              className={`rounded-lg p-4 shadow-sm border relative ${
-                msg.isOutgoing
-                  ? "bg-[#008376]/20 rounded-tr-none border-[#00685d]/10"
-                  : "bg-white rounded-tl-none border-[#bdc9c5]/20"
-              }`}
-            >
-              {msg.hasAttachment && (
-                <div className="bg-white p-2 rounded flex items-center space-x-3 mb-3 border border-[#bdc9c5]/30 cursor-pointer hover:bg-[#f4faff] transition-colors">
-                  <div className="w-10 h-10 bg-[#ffdad6] text-[#93000a] rounded flex items-center justify-center shrink-0">
-                    <IoDocumentTextOutline className="text-xl" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#0c1e26] truncate">
-                      Q3_Design_Notes_Final.pdf
-                    </p>
-                    <p className="text-xs font-medium text-[#3d4946]">1.2 MB</p>
-                  </div>
-                </div>
-              )}
-              <p className="text-sm text-[#0c1e26] mb-2">{msg.text}</p>
-              <div className="flex justify-end items-center mt-1 space-x-1">
-                <span className="text-[11px] text-[#3d4946] leading-none">
-                  {msg.time}
-                </span>
-                {msg.isOutgoing && (
-                  <IoCheckmarkDoneCircleOutline className="text-[14px] text-[#00685d]" />
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+        {/* messages */}
+
+        {selectedConv?.map((item, index) => {
+          return <p>{item.message}</p>;
+        })}
       </div>
 
       {/* Message Input */}
