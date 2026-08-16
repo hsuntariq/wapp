@@ -120,7 +120,7 @@ const ChatBar = () => {
 
       {/* Conversation List */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        {conversations.map((conv) => (
+        {conversations?.map((conv) => (
           <div
             onClick={() => {
               setSelected(conv?.receiver_id);
@@ -157,7 +157,9 @@ const ChatBar = () => {
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex justify-between items-baseline mb-1">
                 <h3 className="text-sm font-semibold text-[#0c1e26] truncate">
-                  {conv?.receiver_id?.name || ""}
+                  {conv?.receiver_id._id == user._id
+                    ? conv?.sender_id?.name
+                    : conv?.receiver_id?.name}
                 </h3>
                 <span className="text-xs font-medium text-[#3d4946]">
                   {moment(

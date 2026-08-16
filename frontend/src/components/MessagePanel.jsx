@@ -20,6 +20,23 @@ const MessagePanel = () => {
   const [message, setMessage] = useState("");
   const { selected, generateColor } = useGlobal();
   const { user, getMyChats, selectedConv } = useGlobal();
+  const [myMessages, setMyMessages] = useState([]);
+
+  const getMyMesssages = async () => {
+    const response = await axios.post(
+      `http://localhost:5174/add-message/${user?._id}/${selected?._id}`,
+      {
+        message,
+      },
+    );
+
+    setMyMessages(response.data.messages);
+  };
+
+  useEffect(() => {
+    getMyMesssages();
+  }, [selected]);
+
   const handleSend = async () => {
     if (message.trim()) {
       const response = await axios.post(
@@ -28,7 +45,8 @@ const MessagePanel = () => {
           message,
         },
       );
-      getMyChats();
+
+      setMyMessages(response.data.messages);
       // Handle send message
       setMessage("");
     }
@@ -89,7 +107,7 @@ const MessagePanel = () => {
 
         {/* messages */}
 
-        {selectedConv?.map((item, index) => {
+        {myMessages?.map((item, index) => {
           return <p>{item.message}</p>;
         })}
       </div>

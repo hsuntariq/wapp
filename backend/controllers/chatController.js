@@ -34,7 +34,22 @@ export const getMyChats = async (req, res) => {
 
   let myChats = await Chat.find({
     $or: [{ sender_id: user_id }, { receiver_id: user_id }],
-  }).populate("receiver_id", "username name email");
+  }).populate("receiver_id sender_id", "username name email");
 
   res.send(myChats);
+};
+
+// get the specefic chat
+
+export const getSpecificChat = async (req, res) => {
+  const { sender_id, receiver_id } = req.params;
+
+  let myChat = await Chat.findOne({
+    $or: [
+      { $and: [{ sender_id: sender_id }, { receiver_id: receiver_id }] },
+      { $and: [{ sender_id: receiver_id }, { receiver_id: sender_id }] },
+    ],
+  });
+
+  res.send(myChat?.messages);
 };
